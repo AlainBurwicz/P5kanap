@@ -123,11 +123,10 @@ displayCart();
 
 // Modification de la quantité
 
-// Récuperation du prix dans Product 
+// Récuperation du prix
 
 function prix(prixUnitaire) {
   var  product = document.getElementById("price");
-  console.log(prixUnitaire);
   product.price = prixUnitaire;
 }
 
