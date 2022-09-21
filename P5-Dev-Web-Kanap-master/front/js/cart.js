@@ -116,12 +116,25 @@ async function getProductById(productId) {
     });
 }
 
-displayCart();
 
+
+
+displayCart();
 
 // Modification de la quantité
 
+// Récuperation du prix dans Product 
+
+function prix(prixUnitaire) {
+  var  product = document.getElementById("price");
+  console.log(prixUnitaire);
+  product.price = prixUnitaire;
+}
+
+
 function changeQuantity() {
+
+  
   const quantityInputs = document.querySelectorAll(".itemQuantity");
   quantityInputs.forEach((quantityInput) => {
     quantityInput.addEventListener("change", (event) => {
@@ -132,17 +145,16 @@ function changeQuantity() {
       let cart = localStorage.getItem("Datakanap");
       let items = JSON.parse(cart);
 
-
-
-
       items = items.map((item) => {
         if (item.id == dataId && item.color == dataColor) {
             item.quantity = inputValue;
-            // document.querySelectorAll(".prixTotalQty").innerHTML = ${cart[i].quantity * prixUnitaire};
+              
 
 
         }
         return item;
+          // (document.querySelectorAll(".prixTotalQty").innerHTML = `${cart[i].quantity * prixUnitaire}`;)
+      
       
       });
 
@@ -159,7 +171,7 @@ function changeQuantity() {
       // location.reload();
     });
   });
-}
+};
 
 
 // Suppression d'un article par le bouton supprimer
@@ -387,33 +399,33 @@ let valuePrenom, valueNom, valueAdresse, valueVille, valueEmail;
 
 });
 
-const btnValidate = document.querySelector("#order");
+ const btnValidate = document.querySelector("#order");
 
-// Ecoute de l'évenement click sur le bouton valider pour le formulaire utilisateur
+ // Ecoute de l'évenement click sur le bouton valider pour le formulaire utilisateur
 
-btnValidate.addEventListener("click", (event) => {
-  event.preventDefault();
-  console.log("Post stoppé")
+ btnValidate.addEventListener("click", (event) => {
+   event.preventDefault();
+   console.log("Post stoppé")
 
-// Vérification des valeurs dans les champs contact. Si valeur = true
+ // Vérification des valeurs dans les champs contact. Si valeur = true
 
-if(valuePrenom && valueNom && valueAdresse && valueVille && valueEmail) {
-  console.log("c'est OK pour l'envoi");
+ if(valuePrenom && valueNom && valueAdresse && valueVille && valueEmail) {
+   console.log("c'est OK pour l'envoi");
 
-  const commandeFinale = JSON.parse(localStorage.getItem("Datakanap"));
-  let commandeId = [];
-  console.log(commandeFinale);
-  console.log(commandeId);
+   const commandeFinale = JSON.parse(localStorage.getItem("Datakanap"));
+   let commandeId = [];
+   console.log(commandeFinale);
+   console.log(commandeId);
   
-  commandeFinale.forEach((commande) => {
-    commandeId.push(commande._id);
-  });
+   commandeFinale.forEach((commande) => {
+     commandeId.push(commande._id);
+   });
 
-  const data = {
-    contact: {
-      firstName: valuePrenom,
-      lastName: valueNom,
-      address: valueAdresse,
+     const data = {
+     contact: {
+       firstName: valuePrenom,
+       lastName: valueNom,
+       address: valueAdresse,
       city: valueVille,
       email: valueEmail,
     },
@@ -455,12 +467,10 @@ if(valuePrenom && valueNom && valueAdresse && valueVille && valueEmail) {
      if (reponseServeur.orderId != "") {
        location.href = "confirmation.html?id=" + orderId;
      }
- });
+  });
 
   
 } else {
   alert("Veuillez bien remplir le formulaire");
 }
 });
-
-
