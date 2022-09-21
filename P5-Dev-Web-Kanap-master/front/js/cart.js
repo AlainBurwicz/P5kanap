@@ -2,6 +2,7 @@
 
 let cart = JSON.parse(localStorage.getItem("Datakanap"));
 
+
 // Variable pour le stockage des Id pour les articles présents dans le panier
 
 let products = [];
@@ -132,22 +133,25 @@ function changeQuantity() {
       let items = JSON.parse(cart);
 
 
+
+
       items = items.map((item) => {
         if (item.id == dataId && item.color == dataColor) {
             item.quantity = inputValue;
-          //  console.log(inputValue);
+            // document.querySelectorAll(".prixTotalQty").innerHTML = ${cart[i].quantity * prixUnitaire};
 
 
-          // document.querySelector("#totalPrice").innerHTML = inputValue * totalPrice
         }
         return item;
       
       });
 
+
       // Mise à jour du localStorage
 
       let itemsStr = JSON.stringify(items);
       localStorage.setItem("Datakanap", itemsStr);
+
 
 
       // Mise à jour de la page panier
