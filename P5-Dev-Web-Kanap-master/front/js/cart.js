@@ -34,7 +34,7 @@ async function displayCart() {
   for (i = 0; i < cart.length; i++) {
     const product = await getProductById(cart[i].id);
     const prixUnitaire = (product.price * 1);
-    const totalPriceItem = (product.price *= cart[i].quantity);
+    // const totalPriceItem = (product.price *= cart[i].quantity);
     cartArray += `<article class="cart__item" data-id="${cart[i].id}" data-color="${cart[i].color}">
                   <div class="cart__item__img">
                       <img src="${product.imageUrl}" alt="${product.altTxt}">
@@ -43,15 +43,17 @@ async function displayCart() {
                       <div class="cart__item__content__description">
                           <h2>${product.name}</h2>
                           <p>${cart[i].color}</p>
-                          <p>Prix unitaire : ${prixUnitaire}€</p>
+                           <p>Prix unitaire : ${prixUnitaire}€</p>
                       </div>
                       <div class="cart__item__content__settings">
                         <div class="cart__item__content__settings__quantity">
                             <p id="quantité">
                               Qté : <input data-id= ${cart[i].id} data-color= ${cart[i].color} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${cart[i].quantity}>
                             </p>
-                            <p id="sousTotal">Prix total pour cet article: ${totalPriceItem}€</p> 
                         </div>
+                        <div><p class="prixTotalQty">
+                        ${cart[i].quantity * prixUnitaire}<span> €</span></p></div>
+
                         <div class="cart__item__content__settings__delete">
                         </br>
                           <p data-id= ${cart[i].id} data-color= ${cart[i].color} class="deleteItem">Supprimer</p>
@@ -61,6 +63,10 @@ async function displayCart() {
                   </div>
                   </article>`;
   }
+
+
+
+  
 
   // Boucle d'affichage du nombre total d'articles dans le panier et de la somme totale
 
@@ -77,6 +83,8 @@ async function displayCart() {
     
   }
 
+
+
   document.getElementById("totalQuantity").innerHTML = totalQuantity;
   document.getElementById("totalPrice").innerHTML = totalPrice;
 
@@ -91,19 +99,24 @@ async function displayCart() {
 // Récupération des produits de l'API
 
 async function getProductById(productId) {
+
   return fetch("http://localhost:3000/api/products/" + productId)
     .then(function (res) {
       return res.json();
+      
     })
-    .catch((err) => {
+    .catch((error) => {
       // Erreur serveur
-      console.log("erreur");
+      alert(error,"erreur");
     })
     .then(function (data) {
       return data;
+     
     });
 }
+
 displayCart();
+
 
 // Modification de la quantité
 
@@ -118,17 +131,39 @@ function changeQuantity() {
       let cart = localStorage.getItem("Datakanap");
       let items = JSON.parse(cart);
 
+
       items = items.map((item) => {
         if (item.id == dataId && item.color == dataColor) {
-          item.quantity = inputValue;
+            item.quantity = inputValue;
+          //  console.log(inputValue);
+
+
+          // document.querySelector("#totalPrice").innerHTML = inputValue * totalPrice
         }
         return item;
+      
       });
+
+      
+
+      // if (inputValue < 1) {
+      //   localStorage.remove("Datakap"), location.href ="./cart.html";
+      // }
+
+       // Retirer le produit si la quantité est inférieure à 1
+
+      //  if (inputValue < 1) {
+      //   localStorage.remove("Datakap"), location.href ="./cart.html";
+      // }
+
+
+      // document.querySelectorAll("#sousTotal").cart.textContent = (article.price * inputValue); 
 
       // Mise à jour du localStorage
 
       let itemsStr = JSON.stringify(items);
       localStorage.setItem("Datakanap", itemsStr);
+
 
       // Mise à jour de la page panier
 
@@ -397,9 +432,46 @@ if(valuePrenom && valueNom && valueAdresse && valueVille && valueEmail) {
   };
 
   console.log(data);
+
+     //  Création méthode POST
+  
+     fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+ 
+      // Transformation de l'objet data en string
+ 
+      body: JSON.stringify(data),
+  })
+  .then((res) => res.json())
+  .then((promise) => {
+    let reponseServeur = promise;
+    console.log(reponseServeur);
+
+  const dataCommande = {
+   contact: reponseServeur.contact,
+   order: reponseServeur.orderId,
+  }
+
+  if(commandeFinale == null) {
+   commandeFinale = [];
+   commandeFinale.push(dataCommande);
+   localStorage.setItem("commandes",JSON.stringify(commandeFinale)); 
+  } else if (commandeFinale != null) {
+   commandeFinale.push(dataCommande);
+   localStorage.setItem("commandes",JSON.stringify(commandeFinale)); 
+  }
+   localStorage.removeItem("Datakanap");
+ // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
+     if (reponseServeur.orderId != "") {
+       location.href = "confirmation.html?id=" + orderId;
+     }
+ });
+
+  
 } else {
   alert("Veuillez bien remplir le formulaire");
 }
-
 });
+
 
