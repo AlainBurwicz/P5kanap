@@ -103,7 +103,8 @@ let registredProduct = (product) => {
         if (item) {
           item.quantity = item.quantity + selectedProduct.quantity;
           item.totalPrice += item.price * selectedProduct.quantity;
-          localStorage.setItem("Datakanap", JSON.stringify(existingCart));
+          localStorage.setItem("Datakanap", JSON.stringify(existingCart)),
+          (item = JSON.parse(localStorage.getItem("DataKanap")));
           console.log("Quantité supplémentaire dans le panier.");
           return;
         }
