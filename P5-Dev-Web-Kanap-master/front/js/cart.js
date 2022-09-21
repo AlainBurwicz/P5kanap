@@ -144,21 +144,6 @@ function changeQuantity() {
       
       });
 
-      
-
-      // if (inputValue < 1) {
-      //   localStorage.remove("Datakap"), location.href ="./cart.html";
-      // }
-
-       // Retirer le produit si la quantité est inférieure à 1
-
-      //  if (inputValue < 1) {
-      //   localStorage.remove("Datakap"), location.href ="./cart.html";
-      // }
-
-
-      // document.querySelectorAll("#sousTotal").cart.textContent = (article.price * inputValue); 
-
       // Mise à jour du localStorage
 
       let itemsStr = JSON.stringify(items);
