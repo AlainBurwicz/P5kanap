@@ -34,8 +34,8 @@ async function displayCart() {
 
   for (i = 0; i < cart.length; i++) {
     const product = await getProductById(cart[i].id);
-     const prixUnitaire = (product.price * 1);
-     
+    const prixUnitaire = (product.price * 1);
+
     // const totalPriceItem = (product.price *= cart[i].quantity);
     cartArray += `<article class="cart__item" data-id="${cart[i].id}" data-color="${cart[i].color}">
                   <div class="cart__item__img">
@@ -82,6 +82,8 @@ async function displayCart() {
 
   }
 
+
+
   document.getElementById("totalQuantity").innerHTML = totalQuantity;
   document.getElementById("totalPrice").innerHTML = totalPrice;
 
@@ -99,26 +101,25 @@ async function displayCart() {
 async function getProductById(productId) {
 
   return fetch("http://localhost:3000/api/products/" + productId)
-     .then(function (res) {
+    .then(function (res) {
       // .then((res) =>
       // res.json().then((data) => {
       //   console.log(data);
       // })
-       return res.json();
+      return res.json();
 
-     })
+    })
     .catch((error) => {
       //  Erreur serveur
       alert(error, "erreur");
     })
-     .then(function (data) {
+    .then(function (data) {
 
-         return data;
+      return data;
 
 
-     });
+    });
 }
-
 
 
 displayCart();
@@ -141,6 +142,11 @@ function changeQuantity() {
       items = items.map((item) => {
         if (item.id == dataId && item.color == dataColor) {
           item.quantity = inputValue;
+          const changeQty = document.querySelector(".itemQuantity");
+          changeQty.addEventListener("click", () => {
+            document.querySelectorAll(".prixTotalQty").innerHTML = `${cart[i].quantity * product.price}`;
+          })
+
           // document.querySelectorAll(".prixTotalQty").innerHTML = `${cart[i].quantity * product.price}`;
         }
         return item;
@@ -151,10 +157,9 @@ function changeQuantity() {
 
       let itemsStr = JSON.stringify(items);
       localStorage.setItem("Datakanap", itemsStr);
-      
+
       // Mise à jour de la page panier
 
-      document.querySelector(".prixTotalQty").innerHTML = `${cart[i].quantity * product.price}`;
 
 
       // location.reload();
