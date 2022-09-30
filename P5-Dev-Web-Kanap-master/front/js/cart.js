@@ -1,90 +1,107 @@
 // Récupération du localstorage ABZ le 25/08/2022
 
-let cart = JSON.parse(localStorage.getItem("Datakanap"));
+//LS:CETTE FONCTION EXTRAIT LE PANIER ACTUEL DU LOCALSTORAGE ET LE TRANSFORME EN TABLEAU D OBJET JSON
+
+function recupPanier() {
+
+  let panierRecup = localStorage.getItem("Datakanap"); //panierRecup est un txt
+
+  if (panierRecup == null) {
+
+    return [];
+
+  } else {
+
+    return JSON.parse(panierRecup); //on recupere un tableau d'objet JSon ex: indice 0 {Id,qte,couleur}
+
+  }
+ }
+
+// let cart = JSON.parse(localStorage.getItem("Datakanap"));
 
 // Variable pour le stockage des Id pour les articles présents dans le panier
 
-let products = [];
+// let products = [];
 
 // Variable servant à récupérer l'orderId envoyé par le serveur lors de la requête POST
 // (Des requêtes POST successives et identiques peuvent avoir des effets additionnels, ce qui peut revenir par exemple à passer plusieurs fois une commande.)
 
-let orderId = "";
+// let orderId = "";
 
 // Affichage du contenu du panier
 
-async function affichePanier() {
-  const parser = new DOMParser();
-  const positionEmptyCart = document.getElementById("cart__items");
-  let cartArray = [];
+// async function affichePanier() {
+//   const parser = new DOMParser();
+//   const positionEmptyCart = document.getElementById("cart__items");
+//   // let cartArray = [];
 
-  // Si le localstorage (panier) est vide
+//   // Si le localstorage (panier) est vide
 
-  if (cart.length === 0) {
-    positionEmptyCart.textContent = "Votre panier est vide";
-    document.querySelector(".cart__order__form").hidden = true;
+//   if (panierRecup.length === 0) {
+//     positionEmptyCart.textContent = "Votre panier est vide";
+//     document.querySelector(".cart__order__form").hidden = true;
 
-    // document.querySelector(".cart__order__form").style.display = "none"; Saisie CSS
-  } else {
-    console.log("Des produits sont présents dans le panier");
-  }
+//     // document.querySelector(".cart__order__form").style.display = "none"; Saisie CSS
+//   } else {
+//     console.log("Des produits sont présents dans le panier");
+//   }
 
-  // Si le localstorage (panier) contient des produits
+//   // Si le localstorage (panier) contient des produits
 
-  // for (i = 0; i < cart.length; i++) {
-  //   const product = await getProductById(cart[i].id);
+//   // for (i = 0; i < cart.length; i++) {
+//   //   const product = await getProductById(cart[i].id);
 
-  //   cartArray += `<article class="cart__item" data-id="${cart[i].id}" data-color="${cart[i].color}">
-  //                 <div class="cart__item__img">
-  //                     <img src="${product.imageUrl}" alt="${product.altTxt}">
-  //                 </div>
-  //                 <div class="cart__item__content">
-  //                     <div class="cart__item__content__description">
-  //                         <h2>${product.name}</h2>
-  //                         <p>${cart[i].color}</p>
-  //                          <p>Prix unitaire : ${product.price}€</p>
-  //                     </div>
-  //                     <div class="cart__item__content__settings">
-  //                       <div class="cart__item__content__settings__quantity">
-  //                           <p id="quantité">
-  //                             Qté : <input data-id= ${cart[i].id} data-color= ${cart[i].color} data-prixUnitaire= ${product.price} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${cart[i].quantity}>
-  //                           </p>
-  //                       </div>
-  //                      <div class="cart__item__content__settings__delete">
-  //                       </br>
-  //                         <p data-id= ${cart[i].id} data-color= ${cart[i].color} class="deleteItem">Supprimer</p>
-  //                       </div>
-  //                     </div>
-  //                   </div>
-  //                 </div>
-  //                 </article>`;
-  // }
+//   //   cartArray += `<article class="cart__item" data-id="${cart[i].id}" data-color="${cart[i].color}">
+//   //                 <div class="cart__item__img">
+//   //                     <img src="${product.imageUrl}" alt="${product.altTxt}">
+//   //                 </div>
+//   //                 <div class="cart__item__content">
+//   //                     <div class="cart__item__content__description">
+//   //                         <h2>${product.name}</h2>
+//   //                         <p>${cart[i].color}</p>
+//   //                          <p>Prix unitaire : ${product.price}€</p>
+//   //                     </div>
+//   //                     <div class="cart__item__content__settings">
+//   //                       <div class="cart__item__content__settings__quantity">
+//   //                           <p id="quantité">
+//   //                             Qté : <input data-id= ${cart[i].id} data-color= ${cart[i].color} data-prixUnitaire= ${product.price} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${cart[i].quantity}>
+//   //                           </p>
+//   //                       </div>
+//   //                      <div class="cart__item__content__settings__delete">
+//   //                       </br>
+//   //                         <p data-id= ${cart[i].id} data-color= ${cart[i].color} class="deleteItem">Supprimer</p>
+//   //                       </div>
+//   //                     </div>
+//   //                   </div>
+//   //                 </div>
+//   //                 </article>`;
+//   // }
 
 
-  // Boucle d'affichage du nombre total d'articles dans le panier et de la somme totale
+//   // Boucle d'affichage du nombre total d'articles dans le panier et de la somme totale
 
-  let totalQuantity = 0;
-  let totalPrice = 0;
+//   let totalQuantity = 0;
+//   let totalPrice = 0;
 
-  for (i = 0; i < cart.length; i++) {
-    const article = await getProductById(cart[i].id);
-    totalQuantity += parseInt(cart[i].quantity);
-    totalPrice += parseInt(article.price * cart[i].quantity);
+//   // for (i = 0; i < cart.length; i++) {
+//   //   const article = await getProductById(cart[i].id);
+//   //   totalQuantity += parseInt(cart[i].quantity);
+//   //   totalPrice += parseInt(article.price * cart[i].quantity);
 
-    console.log(totalQuantity);
-    console.log(totalPrice);
-  }
+//   //   console.log(totalQuantity);
+//   //   console.log(totalPrice);
+//   // }
 
-  document.getElementById("totalQuantity").innerHTML = totalQuantity;
-  document.getElementById("totalPrice").innerHTML = totalPrice;
+//   // document.getElementById("totalQuantity").innerHTML = totalQuantity;
+//   // document.getElementById("totalPrice").innerHTML = totalPrice;
 
-  if (i == cart.length) {
-    const displayPanier = parser.parseFromString(cartArray, "text/html");
+//   // if (i == cart.length) {
+//   //   const displayPanier = parser.parseFromString(cartArray, "text/html");
 
-    positionEmptyCart.appendChild(displayPanier.body);
-  deleteItem();
-  }
-}
+//   //   positionEmptyCart.appendChild(displayPanier.body);
+//   // deleteItem();
+//   // }
+// }
 
 // // Récupération des produits de l'API par son id
 
@@ -185,9 +202,62 @@ function affichePanier() {
         );
 
         //-----------------------------------------------------ECOUTE ET GESTION DES MODIF DE QUANTITE
+
+        function modifierQtePanier(idQteColor, newQte) {
+
+          let Panier = recupPanier();
+        
+          let articleQuiChange = Panier.find(
+        
+            (iqc) => iqc.id == idQteColor.id && iqc.color == idQteColor.color
+        
+          );
+        
+          let vieilleQte = articleQuiChange.quantity;
+        
+          articleQuiChange.quantity = newQte;
+        
+          let prixTotal = document.querySelector("#totalPrice");
+        
+          // console.log("selecteur prix total: ",prixTotal);
+        
+          // console.log("prix total précédent: ",prixTotal.innerText);
+        
+        
+        
+         
+        
+          // console.log("vieille qte: ",vieilleQte);
+        
+          // console.log("new qte: ",newQte);
+        
+          savePanier(Panier);
+        
+          // console.log(Panier);
+        
+          let qteTotale = document.querySelector("#totalQuantity");
+        
+          // console.log("qte totale innertext avant calcul: ",qteTotale.innerText);
+        
+          qteTotale.innerText = parseInt(qteTotale.innerText) - parseInt(vieilleQte) + parseInt(newQte);
+        
+          console.log("qte totale innertext: ",qteTotale.innerText);
+        
+          // console.log(document.querySelector(".cart__item__content__description p"));
+        
+          // console.log(document.querySelector(".cart__item__content__description p").nextElementSibling.innerText);
+        
+          let prixUnitaire = parseInt(document.querySelector(".cart__item__content__description").nextElementSibling.innerText);
+        
+          prixTotal.innerText=parseInt(prixTotal.innerText)-(parseInt(vieilleQte)*prixUnitaire)+(parseInt(newQte)*prixUnitaire);
+        
+          // console.log("prix total: ",prixTotal.innerText);
+        
+        }
+        
         let quantite = article.querySelector(".itemQuantity");
         quantite.addEventListener(
-"click",
+"change",
           (Event) => {
             if (Event.target.value >= 1 && Event.target.value < 101) {
               modifierQtePanier(idQteColor, Event.target.value);
@@ -566,71 +636,4 @@ btnValidate.addEventListener("click", (event) => {
 
 //LS:CETTE FONCTION TROUVE LA LIGNE A MODIFIER DU LS ET REMPLACE SA QUANTITE PAR LA NOUVELLE et met à jour qte et prix total dans le DOM
 
-function modifierQtePanier(idQteColor, newQte) {
 
-  let Panier = affichePanier();
-
-  let articleQuiChange = Panier.find(
-
-    (iqc) => iqc.id == idQteColor.id && iqc.color == idQteColor.color
-
-  );
-
-  let vieilleQte = articleQuiChange.quantity;
-
-  articleQuiChange.quantity = newQte;
-
-  let prixTotal = document.querySelector("#totalPrice");
-
-  // console.log("selecteur prix total: ",prixTotal);
-
-  // console.log("prix total précédent: ",prixTotal.innerText);
-
-
-
- 
-
-  // console.log("vieille qte: ",vieilleQte);
-
-  // console.log("new qte: ",newQte);
-
-  savePanier(Panier);
-
-  // console.log(Panier);
-
-  let qteTotale = document.querySelector("#totalQuantity");
-
-  // console.log("qte totale innertext avant calcul: ",qteTotale.innerText);
-
-  qteTotale.innerText = parseInt(qteTotale.innerText) - parseInt(vieilleQte) + parseInt(newQte);
-
-  console.log("qte totale innertext: ",qteTotale.innerText);
-
-  // console.log(document.querySelector(".cart__item__content__description p"));
-
-  // console.log(document.querySelector(".cart__item__content__description p").nextElementSibling.innerText);
-
-  let prixUnitaire = parseInt(document.querySelector(".cart__item__content__description p").nextElementSibling.innerText);
-
-  prixTotal.innerText=parseInt(prixTotal.innerText)-(parseInt(vieilleQte)*prixUnitaire)+(parseInt(newQte)*prixUnitaire);
-
-  // console.log("prix total: ",prixTotal.innerText);
-
-}
-
-//LS:CETTE FONCTION EXTRAIT LE PANIER ACTUEL DU LOCALSTORAGE ET LE TRANSFORME EN TABLEAU D OBJET JSON
-
- function recupPanier() {
-
-  let panierRecup = localStorage.getItem("Datakanap"); //panierRecup est un txt
-
-  if (panierRecup == null) {
-
-    return [];
-
-  } else {
-
-    return JSON.parse(panierRecup); //on recupere un tableau d'objet JSon ex: indice 0 {Id,qte,couleur}
-
-  }
- }
