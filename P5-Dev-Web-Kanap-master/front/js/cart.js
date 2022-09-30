@@ -1,180 +1,70 @@
-// Récupération du localstorage ABZ le 25/08/2022
-
-//LS:CETTE FONCTION EXTRAIT LE PANIER ACTUEL DU LOCALSTORAGE ET LE TRANSFORME EN TABLEAU D OBJET JSON
+// Extraction du panier dur localStorage Datakanap
 
 function recupPanier() {
-
   let panierRecup = localStorage.getItem("Datakanap"); //panierRecup est un txt
 
   if (panierRecup == null) {
-
     return [];
-
   } else {
-
     return JSON.parse(panierRecup); //on recupere un tableau d'objet JSon ex: indice 0 {Id,qte,couleur}
-
   }
- }
+}
 
-// let cart = JSON.parse(localStorage.getItem("Datakanap"));
-
-// Variable pour le stockage des Id pour les articles présents dans le panier
-
-// let products = [];
-
-// Variable servant à récupérer l'orderId envoyé par le serveur lors de la requête POST
-// (Des requêtes POST successives et identiques peuvent avoir des effets additionnels, ce qui peut revenir par exemple à passer plusieurs fois une commande.)
-
-// let orderId = "";
-
-// Affichage du contenu du panier
-
-// async function affichePanier() {
-//   const parser = new DOMParser();
-//   const positionEmptyCart = document.getElementById("cart__items");
-//   // let cartArray = [];
-
-//   // Si le localstorage (panier) est vide
-
-//   if (panierRecup.length === 0) {
-//     positionEmptyCart.textContent = "Votre panier est vide";
-//     document.querySelector(".cart__order__form").hidden = true;
-
-//     // document.querySelector(".cart__order__form").style.display = "none"; Saisie CSS
-//   } else {
-//     console.log("Des produits sont présents dans le panier");
-//   }
-
-//   // Si le localstorage (panier) contient des produits
-
-//   // for (i = 0; i < cart.length; i++) {
-//   //   const product = await getProductById(cart[i].id);
-
-//   //   cartArray += `<article class="cart__item" data-id="${cart[i].id}" data-color="${cart[i].color}">
-//   //                 <div class="cart__item__img">
-//   //                     <img src="${product.imageUrl}" alt="${product.altTxt}">
-//   //                 </div>
-//   //                 <div class="cart__item__content">
-//   //                     <div class="cart__item__content__description">
-//   //                         <h2>${product.name}</h2>
-//   //                         <p>${cart[i].color}</p>
-//   //                          <p>Prix unitaire : ${product.price}€</p>
-//   //                     </div>
-//   //                     <div class="cart__item__content__settings">
-//   //                       <div class="cart__item__content__settings__quantity">
-//   //                           <p id="quantité">
-//   //                             Qté : <input data-id= ${cart[i].id} data-color= ${cart[i].color} data-prixUnitaire= ${product.price} type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${cart[i].quantity}>
-//   //                           </p>
-//   //                       </div>
-//   //                      <div class="cart__item__content__settings__delete">
-//   //                       </br>
-//   //                         <p data-id= ${cart[i].id} data-color= ${cart[i].color} class="deleteItem">Supprimer</p>
-//   //                       </div>
-//   //                     </div>
-//   //                   </div>
-//   //                 </div>
-//   //                 </article>`;
-//   // }
-
-
-//   // Boucle d'affichage du nombre total d'articles dans le panier et de la somme totale
-
-//   let totalQuantity = 0;
-//   let totalPrice = 0;
-
-//   // for (i = 0; i < cart.length; i++) {
-//   //   const article = await getProductById(cart[i].id);
-//   //   totalQuantity += parseInt(cart[i].quantity);
-//   //   totalPrice += parseInt(article.price * cart[i].quantity);
-
-//   //   console.log(totalQuantity);
-//   //   console.log(totalPrice);
-//   // }
-
-//   // document.getElementById("totalQuantity").innerHTML = totalQuantity;
-//   // document.getElementById("totalPrice").innerHTML = totalPrice;
-
-//   // if (i == cart.length) {
-//   //   const displayPanier = parser.parseFromString(cartArray, "text/html");
-
-//   //   positionEmptyCart.appendChild(displayPanier.body);
-//   // deleteItem();
-//   // }
-// }
-
-// // Récupération des produits de l'API par son id
-
-// async function getProductById(productId) {
-//   return fetch("http://localhost:3000/api/products/" + productId)
-//     .then(function (res) {
-//       // .then((res) =>
-//       // res.json().then((data) => {
-//       //   console.log(data);
-//       // })
-//       return res.json();
-//     })
-//     .catch((error) => {
-//       //  Erreur serveur
-//       alert(error, "erreur");
-//     })
-//     .then(function (data) {
-//       return data;
-//     });
-// }
-
-
-// displayCart();
 affichePanier();
 
-// Modification de la quantité
-//function test
-//DANS CETTE FONCTION, POUR CHAQUE OBJET DU PANIER, ON CREER UN ARTICLE DANS LE DOM POUR L AFFICHER, ON ECOUTE LE CLICK SUR SUPPRIMER 
-//ET LA MODIF DE QUANTITE ET ON LES GERE en cas de click.
+// Fonction créant pour chaque objet du panier un article dans le DOM pour l'affichage
+
 function affichePanier() {
   let Panier = recupPanier();
   let prixTotal = 0;
   let qteTotale = 0;
   for (let idQteColor of Panier) {
-    //pour chaque article du panier:
-    //on recupere chaque objet à afficher au panier dans l'api à partir de son id:
+    // Pour chaque article du panier, on recupere chaque objet à afficher au panier dans l'API à partir de son id
+
     let myPromise = fetch(
       "http://localhost:3000/api/products/" + idQteColor.id
-    ); //le résultat de la promesse contient l'article voulu au format ?
+    );
+
+    // le résultat de la promesse contient l'article voulu
+
     myPromise
       .then(function (result) {
         if (result) {
-          return result.json(); //on convertit l'objet au format Json
+          return result.json();
+
+          // Conversion de l'objet au format JSON
         }
       })
       .then((ProductJson) => {
-        //-----------------------------------------------CREATION D UN ARTICLE DOM (AFFICHAGE)
+        // ************************* CREATION D UN ARTICLE DOM (AFFICHAGE) *************************
+
         let article = document.createElement("article");
         article.setAttribute("class", "cart__item");
         article.setAttribute("data-id", idQteColor.id);
         article.setAttribute("data-color", idQteColor.color);
         article.innerHTML = ` <div class="cart__item__img">
-       <img src=${ProductJson.imageUrl} alt=${ProductJson.altTxt}>
-       </div>
-       <div class="cart__item__content">
-         <div class="cart__item__content__description">
-           <h2>${ProductJson.name}</h2>
-           <p>${idQteColor.color}</p>
-           <p>${ProductJson.price} euros</p>
+         <img src=${ProductJson.imageUrl} alt=${ProductJson.altTxt}>
          </div>
-         <div class="cart__item__content__settings">
-           <div class="cart__item__content__settings__quantity">
-             <p>Qté : </p>
-             <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${idQteColor.quantity}">
+         <div class="cart__item__content">
+           <div class="cart__item__content__description">
+             <h2>${ProductJson.name}</h2>
+             <p>${idQteColor.color}</p>
+             <p>${ProductJson.price} euros</p>
            </div>
-           <div class="cart__item__content__settings__delete">
-             <p class="deleteItem">Supprimer</p>
+           <div class="cart__item__content__settings">
+             <div class="cart__item__content__settings__quantity">
+               <p>Qté : </p>
+               <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${idQteColor.quantity}">
+             </div>
+             <div class="cart__item__content__settings__delete">
+               <p class="deleteItem">Supprimer</p>
+             </div>
            </div>
-         </div>
-       </div> `;
+         </div> `;
         document.querySelector("#cart__items").appendChild(article);
 
-//------------------------------------------------------------CALCUL QUANTITE TOTALE ET PRIX TOTAL
+        // ************************* CALCUL DE LA QUANTITE TOTALE ET PRIX TOTAL *************************
+
         qteTotale += parseInt(idQteColor.quantity, 10);
 
         // console.log(qteTotale) ;
@@ -184,7 +74,84 @@ function affichePanier() {
         document.querySelector("#totalPrice").innerText = prixTotal;
         // console.log(prixTotal);//ok
 
-        //---------------------------------------------------ECOUTE ET GESTION DES SUPPRESSIONS
+        // ************************* ECOUTE ET GESTION DE LA MOFICATION DE LA QUANTITE *************************
+
+        function modifierQtePanier(idQteColor, newQte) {
+          let Panier = recupPanier();
+
+          let articleQuiChange = Panier.find(
+            (iqc) => iqc.id == idQteColor.id && iqc.color == idQteColor.color
+          );
+
+          let vieilleQte = articleQuiChange.quantity;
+
+          articleQuiChange.quantity = newQte;
+
+          console.log("NewQty", newQte);
+
+          let prixTotal = document.querySelector("#totalPrice");
+
+          // console.log("selecteur prix total: ",prixTotal);
+
+          // console.log("prix total précédent: ",prixTotal.innerText);
+
+          // console.log("vieille qte: ",vieilleQte);
+
+          // console.log("new qte: ",newQte);
+
+          // savePanier(Panier);
+
+          // console.log(Panier);
+
+          let qteTotale = document.querySelector("#totalQuantity");
+
+          let totalQty = eval(newQte);
+          console.log("EvalQte", totalQty.tostring);
+
+          console.log("Total Qty", qteTotale);
+
+          // console.log("qte totale innertext avant calcul: ",qteTotale.innerText);
+
+          qteTotale.innerText =
+            parseInt(qteTotale.innerText) -
+            parseInt(vieilleQte) +
+            parseInt(newQte);
+
+          console.log("qte totale innertext: ", qteTotale.innerText);
+
+          // console.log(document.querySelector(".cart__item__content__description p"));
+
+          // console.log(document.querySelector(".cart__item__content__description p").nextElementSibling.innerText);
+
+          let prixUnitaire = parseInt(
+            document.querySelector(".cart__item__content__description p")
+              .nextElementSibling.innerText
+          );
+
+          prixTotal.innerText =
+            parseInt(prixTotal.innerText) -
+            parseInt(vieilleQte) * prixUnitaire +
+            parseInt(newQte) * prixUnitaire;
+
+          // console.log("prix total: ",prixTotal.innerText);
+        }
+
+        let quantite = article.querySelector(".itemQuantity");
+        quantite.addEventListener(
+          "change",
+          (Event) => {
+            if (Event.target.value >= 1 && Event.target.value < 101) {
+              console.log("Valeurs", idQteColor, Event.target.value);
+              modifierQtePanier(idQteColor, Event.target.value);
+            } else {
+              alert("La quantité doit être un nombre entre 1 et 100.");
+            }
+          },
+          false
+        );
+
+        // ************************* ECOUTE ET GESTION DES SUPPRESSIONS *************************
+
         let supprime = article.querySelector(".deleteItem");
         supprime.addEventListener(
           "click",
@@ -201,181 +168,7 @@ function affichePanier() {
           false
         );
 
-        //-----------------------------------------------------ECOUTE ET GESTION DES MODIF DE QUANTITE
-
-        function modifierQtePanier(idQteColor, newQte) {
-
-          let Panier = recupPanier();
-        
-          let articleQuiChange = Panier.find(
-        
-            (iqc) => iqc.id == idQteColor.id && iqc.color == idQteColor.color
-        
-          );
-        
-          let vieilleQte = articleQuiChange.quantity;
-        
-          articleQuiChange.quantity = newQte;
-        
-          let prixTotal = document.querySelector("#totalPrice");
-        
-          // console.log("selecteur prix total: ",prixTotal);
-        
-          // console.log("prix total précédent: ",prixTotal.innerText);
-        
-        
-        
-         
-        
-          // console.log("vieille qte: ",vieilleQte);
-        
-          // console.log("new qte: ",newQte);
-        
-          savePanier(Panier);
-        
-          // console.log(Panier);
-        
-          let qteTotale = document.querySelector("#totalQuantity");
-        
-          // console.log("qte totale innertext avant calcul: ",qteTotale.innerText);
-        
-          qteTotale.innerText = parseInt(qteTotale.innerText) - parseInt(vieilleQte) + parseInt(newQte);
-        
-          console.log("qte totale innertext: ",qteTotale.innerText);
-        
-          // console.log(document.querySelector(".cart__item__content__description p"));
-        
-          // console.log(document.querySelector(".cart__item__content__description p").nextElementSibling.innerText);
-        
-          let prixUnitaire = parseInt(document.querySelector(".cart__item__content__description").nextElementSibling.innerText);
-        
-          prixTotal.innerText=parseInt(prixTotal.innerText)-(parseInt(vieilleQte)*prixUnitaire)+(parseInt(newQte)*prixUnitaire);
-        
-          // console.log("prix total: ",prixTotal.innerText);
-        
-        }
-        
-        let quantite = article.querySelector(".itemQuantity");
-        quantite.addEventListener(
-"change",
-          (Event) => {
-            if (Event.target.value >= 1 && Event.target.value < 101) {
-              modifierQtePanier(idQteColor, Event.target.value);
-            }
-            else{
-              alert("La quantité doit être un nombre entre 1 et 100.");
-            }
-          },
-          false
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-  console.log(Panier);
-}
-
-
-
-// fin function test
-// function changeQuantity() {
-
-//   const quantityInputs = document.querySelectorAll(".itemQuantity");
-//   quantityInputs.forEach((quantityInput) => {
-//     quantityInput.addEventListener("change", (event) => {
-//       event.preventDefault();
-//       const inputValue = event.target.value;
-//       const dataId = event.target.getAttribute("data-id");
-//       const dataColor = event.target.getAttribute("data-color");
-//       const prixUnitaire = event.target.getAttribute("data-prixUnitaire");
-//       console.log("Result Qté", inputValue);
-//       // console.log("data de l'event", event.target, inputValue);
-//       let cart = localStorage.getItem("Datakanap");
-//       let items = JSON.parse(cart);
-  
-
-
-//       //manipulation du DOM
-
-//       // let produitPrice = [];
-//       // let qteTotaleProduit = [];
-//       // let newTableau = localStorage.getItem("Datakanap");
-
-
-//       // newTableau.forEach() => {
-//       //   produitPrice.push(prixUnitaire * inputValue);
-//       //   qteTotaleProduit.push(inputValue);
-//       //  document.getElementById("totalPrice").innerText = sommePrice;
-//       // }
-
-//       for (i = 0; i < cart.length; i++) {
-//         const article = getProductById(cart[i].id);
-//         totalQuantity += parseInt(cart[i].inputValue);
-//         console.log(cart[i].inputValue)
-//         totalPrice += parseInt(article.prixUnitaire * cart[i].inputValue);
-//       }
-
-//       //  console.log("ARTICLE cris", inputValue);
-//       //  let sommePrice = 0;
-//       //  sommePrice += prixUnitaire * inputValue;
-//       //  console.log("prix total", sommePrice);
-//        document.getElementById("totalPrice").innerText = sommePrice;
-      
-//       // fin de manipulation du DOM
-
-//          items = items.map((item) => {
-//           if (item.id == dataId && item.color == dataColor) {
-//             item.quantity = inputValue;
-
-//           }
-
-//           return item;
-//       });
-
-//       // Mise à jour du localStorage
-
-//        let itemsStr = JSON.stringify(items);
-//        console.log("ItemsStr ?", itemsStr);
-//        localStorage.setItem("Datakanap", itemsStr);
-
-
-//       // Mise à jour de la page panier
-// changeQuantity()
-//       // location.reload();
-//      });
-//    });
-// }
-
-// Suppression d'un article par le bouton supprimer
-
-function deleteItem() {
-  const deleteButtons = document.querySelectorAll(".deleteItem");
-  deleteButtons.forEach((deleteButton) => {
-    deleteButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      const deleteId = event.target.getAttribute("data-id");
-      const deleteColor = event.target.getAttribute("data-color");
-      cart = cart.filter(
-        (element) => !(element.id == deleteId && element.color == deleteColor)
-      );
-      
-
-
-
-      // Mise à jour du localStorage
-
-      localStorage.setItem("Datakanap", JSON.stringify(cart));
-
-      // Refresh de la page Panier
-
-      // location.reload();
-      alert("Article supprimé du panier.");
-    });
-  });
-}
-
-// FORMULAIRE UTILISATEUR
+        // ************************* FORMULAIRE UTILISATEURS *************************
 
 // Definition des constantes champs utilisateurs
 
@@ -573,67 +366,19 @@ email.addEventListener("input", function (e) {
   // sélection du bouton Valider
 });
 
-const btnValidate = document.querySelector("#order");
-
-// Ecoute de l'évenement click sur le bouton valider pour le formulaire utilisateur
-
-btnValidate.addEventListener("click", (event) => {
-  event.preventDefault();
-  console.log("Post stoppé");
-
-  // Vérification des valeurs dans les champs contact. Si valeur = true
-
-  if (valuePrenom && valueNom && valueAdresse && valueVille && valueEmail) {
-    console.log("c'est OK pour l'envoi");
-
-    const commandeFinale = JSON.parse(localStorage.getItem("Datakanap"));
-    let commandeId = [];
-    console.log(commandeFinale);
-    console.log(commandeId);
+        // ************************* FIN FORMULAIRE UTILISATEURS *************************
 
 
-    const bonDeCommande = {
-      contact: {
-        firstName: valuePrenom,
-        lastName: valueNom,
-        address: valueAdresse,
-        city: valueVille,
-        email: valueEmail,
-      },
-      products: commandeId,
-    };
-
-    console.log(bonDeCommande);
-
-    //  Création méthode POST
-    fetch("http://localhost:3000/api/products/order", {
-      method: "POST",
-      // transformation de l'objet data en string
-
-      body: JSON.stringify(bonDeCommande),
-      headers: { "Content-Type": "application/json" },
-
-    })
-      .then(function (response) {
-        return response.json();
+        
+        
       })
-      .then(function (data) {
-        localStorage.clear();
-        orderId = data.orderId;
-        // localStorage.setItem("Commande", JSON.stringify(orderId));
-        if (orderId != "") {
-          location.href = "confirmation.html?id=" + orderId;
-        }
-            // window.location.assign(`confirmation.html?orderId=${orderId}`);
+      .catch((error) => {
+        console.log(error);
       });
-  } else {
-    alert("Veuillez bien remplir le formulaire");
   }
-    // Si le localstorage (panier) est vide
-
   
-});
 
-//LS:CETTE FONCTION TROUVE LA LIGNE A MODIFIER DU LS ET REMPLACE SA QUANTITE PAR LA NOUVELLE et met à jour qte et prix total dans le DOM
+  console.log(Panier);
 
 
+}
