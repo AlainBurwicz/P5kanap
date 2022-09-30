@@ -13,6 +13,8 @@ fetch(`http://localhost:3000/api/products/${productId}`)
   .then((product) => {
     selectedProduct(product);
     registredProduct(product);
+    console.log("PRODUIT", product);
+
   })
   .catch((error) => {
     alert(error);
@@ -74,6 +76,7 @@ let registredProduct = (product) => {
 
       let selectedProduct = {
         id: product._id,
+        // price: product.price,
         color: selectedColor.value,
         quantity: parseInt(selectedQuantity.value, 10),
       };

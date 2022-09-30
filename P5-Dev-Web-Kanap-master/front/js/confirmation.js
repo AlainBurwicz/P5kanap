@@ -1,5 +1,10 @@
- // Récupération du n° de commande
+ //Récupération de l'id depuis l'url
+let params = new URL(document.location).searchParams;
+let orderId = params.get("orderId");
 
- let params = new URLSearchParams(window.location.search);
- let orderId = params.get("orderId");
- document.getElementById("orderId").innerHTML += orderId;
+
+//Affichage du numéro de commande
+document.getElementById("orderId").textContent = orderId;
+
+  // Si le localstorage (panier) est vide
+
