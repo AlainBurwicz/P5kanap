@@ -13,7 +13,7 @@ let orderId = "";
 
 // Affichage du contenu du panier
 
-async function displayCart() {
+async function affichePanier() {
   const parser = new DOMParser();
   const positionEmptyCart = document.getElementById("cart__items");
   let cartArray = [];
@@ -31,10 +31,9 @@ async function displayCart() {
 
   // Si le localstorage (panier) contient des produits
 
-  for (i = 0; i < cart.length; i++) {
-    const product = await getProductById(cart[i].id);
+  // for (i = 0; i < cart.length; i++) {
+  //   const product = await getProductById(cart[i].id);
 
-    // const totalPriceItem = (product.price *= cart[i].quantity);
   //   cartArray += `<article class="cart__item" data-id="${cart[i].id}" data-color="${cart[i].color}">
   //                 <div class="cart__item__img">
   //                     <img src="${product.imageUrl}" alt="${product.altTxt}">
@@ -87,28 +86,28 @@ async function displayCart() {
   }
 }
 
-// Récupération des produits de l'API par son id
+// // Récupération des produits de l'API par son id
 
-async function getProductById(productId) {
-  return fetch("http://localhost:3000/api/products/" + productId)
-    .then(function (res) {
-      // .then((res) =>
-      // res.json().then((data) => {
-      //   console.log(data);
-      // })
-      return res.json();
-    })
-    .catch((error) => {
-      //  Erreur serveur
-      alert(error, "erreur");
-    })
-    .then(function (data) {
-      return data;
-    });
-}
+// async function getProductById(productId) {
+//   return fetch("http://localhost:3000/api/products/" + productId)
+//     .then(function (res) {
+//       // .then((res) =>
+//       // res.json().then((data) => {
+//       //   console.log(data);
+//       // })
+//       return res.json();
+//     })
+//     .catch((error) => {
+//       //  Erreur serveur
+//       alert(error, "erreur");
+//     })
+//     .then(function (data) {
+//       return data;
+//     });
+// }
 
 
-displayCart();
+// displayCart();
 affichePanier();
 
 // Modification de la quantité
@@ -175,7 +174,7 @@ function affichePanier() {
           () => {
             //suppression dans le DOM:
             article.remove();
-            qteTotale -= parseInt(idQteColor.qte, 10);
+            qteTotale -= parseInt(idQteColor.quantity, 10);
             document.querySelector("#totalQuantity").innerText = qteTotale;
             prixTotal -= ProductJson.price * parseInt(idQteColor.quantity, 10);
             document.querySelector("#totalPrice").innerText = prixTotal;
@@ -188,7 +187,7 @@ function affichePanier() {
         //-----------------------------------------------------ECOUTE ET GESTION DES MODIF DE QUANTITE
         let quantite = article.querySelector(".itemQuantity");
         quantite.addEventListener(
-          "click",
+"click",
           (Event) => {
             if (Event.target.value >= 1 && Event.target.value < 101) {
               modifierQtePanier(idQteColor, Event.target.value);
@@ -634,5 +633,4 @@ function modifierQtePanier(idQteColor, newQte) {
     return JSON.parse(panierRecup); //on recupere un tableau d'objet JSon ex: indice 0 {Id,qte,couleur}
 
   }
-
-}
+ }
