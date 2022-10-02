@@ -4,17 +4,33 @@ function recupPanier() {
   let panierRecup = localStorage.getItem("Datakanap"); //panierRecup est un txt
 
   if (panierRecup == null) {
+    console.log("Le panier est vide");
+    document.getElementById("cart__items").textContent = "Votre panier est vide";
+
+    // Si le panier ne contient aucun article, on fait disparaître le formulaire utilisateur
+
+    document.querySelector(".cart__order__form").style.display = "none";
     return [];
+
   } else {
     return JSON.parse(panierRecup); //on recupere un tableau d'objet JSon ex: indice 0 {Id,qte,couleur}
   }
 }
 
+const positionEmptyCart = document.getElementById("cart__items");
+
+//   positionEmptyCart.textContent = "Votre panier est vide";
+// }
+
+
 affichePanier();
 
 // Fonction créant pour chaque objet du panier un article dans le DOM pour l'affichage
 
+
+
 function affichePanier() {
+
   let Panier = recupPanier();
   let prixTotal = 0;
   let qteTotale = 0;
@@ -380,5 +396,5 @@ email.addEventListener("input", function (e) {
 
   console.log(Panier);
 
-
 }
+
