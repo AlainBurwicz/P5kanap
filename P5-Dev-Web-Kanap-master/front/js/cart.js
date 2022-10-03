@@ -382,6 +382,58 @@ email.addEventListener("input", function (e) {
   // sélection du bouton Valider
 });
 
+const forumulaireContact = document.querySelector("#order");
+
+
+forumulaireContact.addEventListener("click", (e) => {
+  e.preventDefault();
+  console.log("Post Stoppé");
+  if (valuePrenom && valueNom && valueAdresse && valueVille && valueEmail) {
+    console.log("Bon pour envoyer");
+    const bonDecommande = JSON.parse(localStorage.getItem("Datakanap"));
+    let commandeId = [];
+    console.log("Bon de cde", bonDecommande);
+    console.log("cde ID", commandeId);
+    bonDecommande.forEach((commande) => {
+      commandeId.push(commande.id);
+    });
+
+    const validationCde = {
+      contact:{
+        firstName : valuePrenom,
+        lastName : valueNom,
+        address : valueAdresse,
+        city: valueVille,
+        email: valueEmail,
+      },
+      products : commandeId,
+    };
+
+    console.log(validationCde);
+
+    // **************** FETCH POST API ****************
+
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(validationCde),
+    }).then((res) => res.json())
+    .then((data) => {
+      let reponseServeur = data;
+      // localStorage.clear();
+      orderId = data.orderId;
+      console.log(orderId);
+      // if (orderId != "") {
+      //   location.href = "confirmation.html?id=" + orderId;
+      // }
+      console.log(reponseServeur);
+    })
+
+  } else {
+    alert("Le formulaire n'est pas rempli correctement");
+  }
+})
+
         // ************************* FIN FORMULAIRE UTILISATEURS *************************
 
 

@@ -61,10 +61,6 @@ const getProductId = () => {
         // Récupération des informations du produit sélectionné
         let selectedProduct = {
           id: product._id,
-        //   name: product.name,
-        //   img: product.imageUrl,
-        //   altTxt: product.altTxt,
-        //   description: product.description,
           color: selectedColor.value,
           quantity: parseInt(selectedQuantity.value, 10),
         };
