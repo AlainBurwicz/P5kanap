@@ -1,6 +1,6 @@
  //Récupération de l'id depuis l'url
 let params = new URL(document.location).searchParams;
-let orderId = params.get("orderId");
+let orderId = params.get("id");
 
 
 //Affichage du numéro de commande

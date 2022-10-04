@@ -1,86 +1,86 @@
-// Extraction du panier dur localStorage Datakanap
-
+//LS:CETTE FONCTION SAUVE UN TABLEAU D'OBJETS {ID,QTE,COULEUR} DANS LE LS AU FORMAT TXT
+function savePanier(Panier) {
+  //Panier est un tableau d'objet JSON indice: 0 valeur: {Id,qte,couleur}
+  localStorage.setItem("Datakanap", JSON.stringify(Panier)); //on sauve un Panier txt
+}
+//LS:CETTE FONCTION EXTRAIT LE PANIER ACTUEL DU LOCALSTORAGE ET LE TRANSFORME EN TABLEAU D OBJET JSON
 function recupPanier() {
   let panierRecup = localStorage.getItem("Datakanap"); //panierRecup est un txt
-
   if (panierRecup == null) {
-    console.log("Le panier est vide");
-    document.getElementById("cart__items").textContent = "Votre panier est vide";
-
-    // Si le panier ne contient aucun article, on fait disparaître le formulaire utilisateur
-
+    document.getElementById("cart__items").textContent =
+      "Votre panier est vide";
+    // Si le panier ne contient aucun article on ne fait pas apparaître le formulaire contact utilisateur
     document.querySelector(".cart__order__form").style.display = "none";
     return [];
-
   } else {
     return JSON.parse(panierRecup); //on recupere un tableau d'objet JSon ex: indice 0 {Id,qte,couleur}
   }
 }
+//LS:CETTE FONCTION AJOUTE L ARTICLE CLICKER DANS LE LS, SAUF S IL EXISTE DEJA, DANS CE CAS LA FONCTION MET A JOUR SA QUANTITE
+function ajoutAuPanier({ id, qte, color }) {
+  // 1 arg objet  avec 3 propriété
+  // console.log(id);//ok
+  let PanierA = recupPanier(); //on recupère le tableau  d'objets du panier [clé:0, valeur:{id:"id",qte:"quantité",color:"couleur"}] dans localStorage au format Json
+  console.log(PanierA);
+  let memeProduit = PanierA.find((p) => p._id == id && p.color == color);
+  if (memeProduit != undefined) {
+    //on ajoute la quantite en arg de ajoutAuPanier à la qte initiale
+    memeProduit.quantity =
+      parseInt(memeProduit.quantity, 10) + parseInt(qte, 10);
+    //parseInt(string,10) transforme une string en nombre en base 10 (base 10 par défaut, pas obligé de le mettre)
+  } else {
+    PanierA.push({ id, qte, color });
+  }
+  savePanier(PanierA);
+}
 
-const positionEmptyCart = document.getElementById("cart__items");
-
-//   positionEmptyCart.textContent = "Votre panier est vide";
-// }
-
-
-affichePanier();
-
-// Fonction créant pour chaque objet du panier un article dans le DOM pour l'affichage
-
-
-
+//DANS CETTE FONCTION, POUR CHAQUE OBJET DU PANIER, ON CREER UN ARTICLE DANS LE DOM POUR L AFFICHER, ON ECOUTE LE CLICK SUR SUPPRIMER
+//ET LA MODIF DE QUANTITE ET ON LES GERE en cas de click.
 function affichePanier() {
-
   let Panier = recupPanier();
   let prixTotal = 0;
   let qteTotale = 0;
   for (let idQteColor of Panier) {
-    // Pour chaque article du panier, on recupere chaque objet à afficher au panier dans l'API à partir de son id
-
+    //pour chaque article du panier:
+    //on recupere chaque objet à afficher au panier dans l'api à partir de son id:
     let myPromise = fetch(
       "http://localhost:3000/api/products/" + idQteColor.id
-    );
-
-    // le résultat de la promesse contient l'article voulu
-
+    ); //le résultat de la promesse contient l'article voulu au format ?
     myPromise
       .then(function (result) {
         if (result) {
-          return result.json();
-
-          // Conversion de l'objet au format JSON
+          return result.json(); //on convertit l'objet au format Json
         }
       })
       .then((ProductJson) => {
-        // ************************* CREATION D UN ARTICLE DOM (AFFICHAGE) *************************
-
+        //-----------------------------------------------CREATION D UN ARTICLE DOM (AFFICHAGE)
         let article = document.createElement("article");
         article.setAttribute("class", "cart__item");
         article.setAttribute("data-id", idQteColor.id);
         article.setAttribute("data-color", idQteColor.color);
         article.innerHTML = ` <div class="cart__item__img">
-         <img src=${ProductJson.imageUrl} alt=${ProductJson.altTxt}>
+       <img src=${ProductJson.imageUrl} alt=${ProductJson.altTxt}>
+       </div>
+       <div class="cart__item__content">
+         <div class="cart__item__content__description">
+           <h2>${ProductJson.name}</h2>
+           <p>${idQteColor.color}</p>
+           <p>${ProductJson.price} euros</p>
          </div>
-         <div class="cart__item__content">
-           <div class="cart__item__content__description">
-             <h2>${ProductJson.name}</h2>
-             <p>${idQteColor.color}</p>
-             <p>${ProductJson.price} euros</p>
+         <div class="cart__item__content__settings">
+           <div class="cart__item__content__settings__quantity">
+             <p>Qté : </p>
+             <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${idQteColor.quantity}">
            </div>
-           <div class="cart__item__content__settings">
-             <div class="cart__item__content__settings__quantity">
-               <p>Qté : </p>
-               <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${idQteColor.quantity}">
-             </div>
-             <div class="cart__item__content__settings__delete">
-               <p class="deleteItem">Supprimer</p>
-             </div>
+           <div class="cart__item__content__settings__delete">
+             <p class="deleteItem">Supprimer</p>
            </div>
-         </div> `;
+         </div>
+       </div> `;
+        console.log(idQteColor.quantity);
         document.querySelector("#cart__items").appendChild(article);
 
-        // ************************* CALCUL DE LA QUANTITE TOTALE ET PRIX TOTAL *************************
-
+        //------------------------------------------------------------CALCUL QUANTITE TOTALE ET PRIX TOTAL
         qteTotale += parseInt(idQteColor.quantity, 10);
 
         // console.log(qteTotale) ;
@@ -90,84 +90,7 @@ function affichePanier() {
         document.querySelector("#totalPrice").innerText = prixTotal;
         // console.log(prixTotal);//ok
 
-        // ************************* ECOUTE ET GESTION DE LA MOFICATION DE LA QUANTITE *************************
-
-        function modifierQtePanier(idQteColor, newQte) {
-          let Panier = recupPanier();
-
-          let articleQuiChange = Panier.find(
-            (iqc) => iqc.id == idQteColor.id && iqc.color == idQteColor.color
-          );
-
-          let vieilleQte = articleQuiChange.quantity;
-
-          articleQuiChange.quantity = newQte;
-
-          console.log("NewQty", newQte);
-
-          let prixTotal = document.querySelector("#totalPrice");
-
-          // console.log("selecteur prix total: ",prixTotal);
-
-          // console.log("prix total précédent: ",prixTotal.innerText);
-
-          // console.log("vieille qte: ",vieilleQte);
-
-          // console.log("new qte: ",newQte);
-
-          // savePanier(Panier);
-
-          // console.log(Panier);
-
-          let qteTotale = document.querySelector("#totalQuantity");
-
-          let totalQty = eval(newQte);
-          console.log("EvalQte", totalQty.tostring);
-
-          console.log("Total Qty", qteTotale);
-
-          // console.log("qte totale innertext avant calcul: ",qteTotale.innerText);
-
-          qteTotale.innerText =
-            parseInt(qteTotale.innerText) -
-            parseInt(vieilleQte) +
-            parseInt(newQte);
-
-          console.log("qte totale innertext: ", qteTotale.innerText);
-
-          // console.log(document.querySelector(".cart__item__content__description p"));
-
-          // console.log(document.querySelector(".cart__item__content__description p").nextElementSibling.innerText);
-
-          let prixUnitaire = parseInt(
-            document.querySelector(".cart__item__content__description p")
-              .nextElementSibling.innerText
-          );
-
-          prixTotal.innerText =
-            parseInt(prixTotal.innerText) -
-            parseInt(vieilleQte) * prixUnitaire +
-            parseInt(newQte) * prixUnitaire;
-
-          // console.log("prix total: ",prixTotal.innerText);
-        }
-
-        let quantite = article.querySelector(".itemQuantity");
-        quantite.addEventListener(
-          "change",
-          (Event) => {
-            if (Event.target.value >= 1 && Event.target.value < 101) {
-              console.log("Valeurs", idQteColor, Event.target.value);
-              modifierQtePanier(idQteColor, Event.target.value);
-            } else {
-              alert("La quantité doit être un nombre entre 1 et 100.");
-            }
-          },
-          false
-        );
-
-        // ************************* ECOUTE ET GESTION DES SUPPRESSIONS *************************
-
+        //---------------------------------------------------ECOUTE ET GESTION DES SUPPRESSIONS
         let supprime = article.querySelector(".deleteItem");
         supprime.addEventListener(
           "click",
@@ -184,7 +107,81 @@ function affichePanier() {
           false
         );
 
-        // ************************* FORMULAIRE UTILISATEURS *************************
+        //-----------------------------------------------------ECOUTE ET GESTION DES MODIF DE QUANTITE
+        let quantite = article.querySelector(".itemQuantity");
+        quantite.addEventListener(
+          "change",
+          (Event) => {
+            if (Event.target.value >= 1 && Event.target.value < 101) {
+              modifierQtePanier(idQteColor, Event.target.value);
+            } else {
+              alert("La quantité doit être un nombre entre 1 et 100.");
+            }
+          },
+          false
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  console.log(Panier);
+}
+
+//LS:CETTE FONCTION SUPPRIME UNE LIGNE ID/QUANTITE/COULEUR DU LOCALSTORAGE
+function supprimeLigne(idQteColor) {
+  let Panier = recupPanier();
+  let indexPanier = Panier.findIndex((iqc) => iqc === idQteColor);
+
+  console.log(indexPanier); //index négatif??
+  Panier.splice(indexPanier, 1);
+  localStorage.setItem("Datakanap", JSON.stringify(Panier));
+  console.log(Panier);
+  savePanier(Panier);
+}
+
+//LS:CETTE FONCTION TROUVE LA LIGNE A MODIFIER DU LS ET REMPLACE SA QUANTITE PAR LA NOUVELLE et met à jour qte et prix total dans le DOM
+function modifierQtePanier(idQteColor, newQte) {
+  let Panier = recupPanier();
+  let articleQuiChange = Panier.find(
+    (iqc) => iqc.id == idQteColor.id && iqc.color == idQteColor.color
+  );
+  let vieilleQte = articleQuiChange.quantity;
+  articleQuiChange.quantity = newQte;
+  let prixTotal = document.querySelector("#totalPrice");
+  // console.log("selecteur prix total: ",prixTotal);
+  // console.log("prix total précédent: ",prixTotal.innerText);
+
+  // console.log("vieille qte: ",vieilleQte);
+  // console.log("new qte: ",newQte);
+  savePanier(Panier);
+  // console.log(Panier);
+  let qteTotale = document.querySelector("#totalQuantity");
+  // console.log("qte totale innertext avant calcul: ",qteTotale.innerText);
+  qteTotale.innerText =
+    parseInt(qteTotale.innerText) - parseInt(vieilleQte) + parseInt(newQte);
+  console.log("qte totale innertext: ", qteTotale.innerText);
+  // console.log(document.querySelector(".cart__item__content__description p"));
+  // console.log(document.querySelector(".cart__item__content__description p").nextElementSibling.innerText);
+  let prixUnitaire = parseInt(
+    document.querySelector(".cart__item__content__description p")
+      .nextElementSibling.innerText
+  );
+  prixTotal.innerText =
+    parseInt(prixTotal.innerText) -
+    parseInt(vieilleQte) * prixUnitaire +
+    parseInt(newQte) * prixUnitaire;
+  // console.log("prix total: ",prixTotal.innerText);
+}
+
+window.addEventListener("load", () => {
+  console.log(window.location);
+  if (window.location == "http://127.0.0.1:5500/front/html/cart.html") {
+    affichePanier(); //on appelle la fonction à s'exécuter au chargement de la page panier
+  }
+});
+
+// ************************* FORMULAIRE UTILISATEURS *************************
 
 // Definition des constantes champs utilisateurs
 
@@ -384,7 +381,6 @@ email.addEventListener("input", function (e) {
 
 const forumulaireContact = document.querySelector("#order");
 
-
 forumulaireContact.addEventListener("click", (e) => {
   e.preventDefault();
   console.log("Post Stoppé");
@@ -399,14 +395,14 @@ forumulaireContact.addEventListener("click", (e) => {
     });
 
     const validationCde = {
-      contact:{
-        firstName : valuePrenom,
-        lastName : valueNom,
-        address : valueAdresse,
+      contact: {
+        firstName: valuePrenom,
+        lastName: valueNom,
+        address: valueAdresse,
         city: valueVille,
         email: valueEmail,
       },
-      products : commandeId,
+      products: commandeId,
     };
 
     console.log(validationCde);
@@ -415,38 +411,23 @@ forumulaireContact.addEventListener("click", (e) => {
 
     fetch("http://localhost:3000/api/products/order", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(validationCde),
-    }).then((res) => res.json())
-    .then((data) => {
-      let reponseServeur = data;
-      // localStorage.clear();
-      orderId = data.orderId;
-      console.log(orderId);
-      // if (orderId != "") {
-      //   location.href = "confirmation.html?id=" + orderId;
-      // }
-      console.log(reponseServeur);
     })
-
+      .then((res) => res.json())
+      .then((data) => {
+        let reponseServeur = data;
+        localStorage.clear();
+        orderId = data.orderId;
+        console.log(orderId);
+        console.log(reponseServeur);
+        if (orderId != null && orderId != undefined) {
+          location.href = "confirmation.html?id=" + orderId;
+        }
+      });
   } else {
     alert("Le formulaire n'est pas rempli correctement");
   }
-})
+});
 
-        // ************************* FIN FORMULAIRE UTILISATEURS *************************
-
-
-        
-        
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-  
-
-  console.log(Panier);
-
-}
-
+// ************************* FIN FORMULAIRE UTILISATEURS *************************
